@@ -1,5 +1,7 @@
 from turtle import Screen
 from snake import Snake
+from food import Food
+from scoreboard import Scoreboard
 import time
 
 screen = Screen()
@@ -9,6 +11,8 @@ screen.title("Python Snake Game")
 screen.tracer(0) # Turn turtle animation on/off and set delay for update drawings. 0 means turn it off
 
 snake = Snake()
+food = Food()
+scoreboard = Scoreboard()
 
 screen.listen()
 screen.onkey(snake.up, "Up")
@@ -21,5 +25,22 @@ while game_is_on:
     screen.update() # Perform a TurtleScreen update. To be used when tracer is turned off.
     time.sleep(0.1) # 1 sec delay
     snake.move()
+
+    # detect collision with food
+    if snake.head.distance(food) < 15: # Turtle_obj.distance(another_Turtle_obj) to get distance between two Turtle obj
+        food.refresh()
+        snake.extend()
+        scoreboard.increase_score()
+
+    # detect collision with wall
+    if snake.head.xcor() > 280 or snake.head.xcor() < -280 or snake.head.ycor() > 280 or snake.head.ycor() < -280:
+        game_is_on = False
+        scoreboard.game_over()
+
+    # detect collision with tail
+    for segment in snake.segments[1:]:
+        if snake.head.distance(segment) < 10:
+            game_is_on = False
+            scoreboard.game_over()
 
 screen.exitonclick() # must put end of the project
